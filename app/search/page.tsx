@@ -6,8 +6,10 @@ import {
   FatsecretGeneralSearch,
   fatsecretFetchDetailed,
 } from "@/lib/fatsecret";
-import { mapDetailedSearchToFoodModel, mapGeneralSearchToFoodModel } from "@/lib/utils";
-import { mockFoods } from "@/lib/data/mock-foods";
+import {
+  mapDetailedSearchToFoodModel,
+  mapGeneralSearchToFoodModel,
+} from "@/lib/utils";
 
 export default async function Page(props: {
   searchParams: Promise<{
@@ -15,25 +17,56 @@ export default async function Page(props: {
     food_id?: string;
   }>;
 }) {
-  const searchParams = await props.searchParams;
-  const foodNameQuery = searchParams?.food_name || "";
-  
 
-  const fetchedFoodsData = await fatsecretFetchGeneral(foodNameQuery);
-  const mappedFoodsData = mapGeneralSearchToFoodModel(fetchedFoodsData.foods.food);
-  const foodIdQuery = searchParams?.food_id || mappedFoodsData[0].food_id;
+  const searchParams = await props.searchParams; // Get search params
+  const foodNameQuery = searchParams?.food_name; // Get food_name from search params
+  let fetchedFoodsData;
+  let fetchedFoodData;
+  let mappedFoodsData; // All matched foods by name
+  let mappedFoodData; // Specific food by id
+  let isFoodsFound = false;
+  let isFoodFound = false;
+  let isInput = false;
 
-  const fetchedFoodData = await fatsecretFetchDetailed(foodIdQuery);
-  const mappedFoodData = mapDetailedSearchToFoodModel(fetchedFoodData);
-  console.log(mappedFoodData);
+  // If food_name is empty (meaning the user hasn't entered any input)
+  if (!foodNameQuery) {
+    mappedFoodsData = undefined;
+    mappedFoodData = undefined;
+  } else {
+    isInput = true;
+    fetchedFoodsData = await fatsecretFetchGeneral(foodNameQuery); // Fetch all matched foods by name
+
+    // If no food is found by name
+    if (fetchedFoodsData.foods.total_results == 0) {
+      mappedFoodsData = undefined;
+      mappedFoodData = undefined;
+    } else {
+      isFoodsFound = true;
+      mappedFoodsData = mapGeneralSearchToFoodModel(
+        fetchedFoodsData.foods.food,
+      ); // Map response to FoodGeneral data model
+      const foodIdQuery = searchParams?.food_id || mappedFoodsData[0].food_id;
+
+      fetchedFoodData = await fatsecretFetchDetailed(foodIdQuery);
+
+      mappedFoodData = mapDetailedSearchToFoodModel(fetchedFoodData);
+      if (mappedFoodData) isFoodFound = true;
+      console.log(mappedFoodData);
+    }
+  }
 
   return (
     <>
       <div className="min-h-screen bg-gray-100">
         <div className="mx-auto w-full md:w-[80%] lg:w-[70%] py-6 px-6">
           <SearchBar />
-
-          <SearchResults foods={mappedFoodsData} specificFood={mappedFoodData} />
+          {!isInput && "Enter a food name to show search results."}
+          {isInput && (
+            <SearchResults
+              foods={mappedFoodsData}
+              specificFood={mappedFoodData}
+            />
+          )}
         </div>
       </div>
     </>

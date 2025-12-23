@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { FatsecretGeneralSearchRes, FatsecretGeneralSearch, FatsecretDetailedSearchRes } from "./fatsecret";
+import {
+  FatsecretGeneralSearchRes,
+  FatsecretGeneralSearch,
+  FatsecretDetailedSearchRes,
+} from "./fatsecret";
 import { FoodDetailed, FoodGeneral } from "./data/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,7 +25,10 @@ export function mapGeneralSearchToFoodModel(
 
 export function mapDetailedSearchToFoodModel(
   res: FatsecretDetailedSearchRes,
-): FoodDetailed {
+): FoodDetailed | undefined {
+  if (!res.food) {
+    return undefined;
+  }
   return {
     food_id: res.food.food_id,
     food_name: res.food.food_name,

@@ -2,7 +2,6 @@
 
 import { ScrollArea } from "../scroll-area";
 import { Card, CardContent } from "../card";
-import { mockFoods } from "@/lib/data/mock-foods";
 import PopupPreview from "./popup-preview";
 import { useState } from "react";
 import FoodInfoCard from "./food-info-card";
@@ -14,9 +13,14 @@ export default function SearchResults({
   foods,
   specificFood,
 }: {
-  foods: FoodGeneral[];
+  foods: FoodGeneral[] | undefined;
   specificFood: FoodDetailed | undefined;
 }) {
+
+  if (!foods) {
+    return (<p>No food found.</p>);
+  }
+
   const [query, setQuery] = useState("");
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -65,6 +69,7 @@ export default function SearchResults({
         id="result-preview"
         className="hidden md:block md:w-[50%] h-96 p-1 bg-white overflow-hidden"
       >
+        {!specificFood && (<p>Selected food is invalid.</p>)}
         {specificFood && (
           <div className="h-full flex flex-col">
             <FoodInfoCard food={specificFood} />
