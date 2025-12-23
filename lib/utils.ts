@@ -25,10 +25,8 @@ export function mapGeneralSearchToFoodModel(
 
 export function mapDetailedSearchToFoodModel(
   res: FatsecretDetailedSearchRes,
-): FoodDetailed | undefined {
-  if (!res.food) {
-    return undefined;
-  }
+): FoodDetailed  {
+
   return {
     food_id: res.food.food_id,
     food_name: res.food.food_name,

@@ -110,7 +110,7 @@ interface Serving {
 }
 
 export interface FatsecretDetailedSearchRes {
-  food?: {
+  food: {
     food_id: string;
     food_name: string;
     food_description: string;
