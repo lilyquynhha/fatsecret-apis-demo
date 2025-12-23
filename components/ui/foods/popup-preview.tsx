@@ -1,5 +1,4 @@
-import { Food } from "@/lib/data/types";
-import { Card, CardContent } from "../card";
+import { FoodDetailed } from "@/lib/data/types";
 import FoodInfoCard from "./food-info-card";
 
 import { Button } from "../button";
@@ -7,7 +6,7 @@ export default function PopupPreview({
   selectedFood,
   closePreview,
 }: {
-  selectedFood: Food;
+  selectedFood: FoodDetailed;
   closePreview: () => void;
 }) {
   return (

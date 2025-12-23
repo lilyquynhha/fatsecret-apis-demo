@@ -1,8 +1,12 @@
-export interface Food {
+export interface FoodGeneral {
   food_id: string;
   food_name: string;
+  food_description: string;
   food_type: "Brand" | "Generic";
   brand_name?: string;
+}
+
+export interface FoodDetailed extends FoodGeneral {
   serving_unit: "g" | "ml";
   serving_size: number;
   preferred_serving_size: number;

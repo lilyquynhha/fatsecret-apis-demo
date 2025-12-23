@@ -1,6 +1,6 @@
-import { Food } from "./types";
+import { FoodDetailed } from "./types";
 
-export const mockFoods: Food[] = [
+export const mockFoods: FoodDetailed[] = [
   {
     food_id: "f-001",
     food_name: "Chicken Breast (Boneless, Skinless)",

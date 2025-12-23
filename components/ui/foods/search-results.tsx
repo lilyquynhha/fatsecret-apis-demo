@@ -6,20 +6,41 @@ import { mockFoods } from "@/lib/data/mock-foods";
 import PopupPreview from "./popup-preview";
 import { useState } from "react";
 import FoodInfoCard from "./food-info-card";
+import { FoodGeneral, FoodDetailed } from "@/lib/data/types";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function SearchResults() {
-  const [selectedFood, setSelectedFood] = useState(mockFoods[0]);
+export default function SearchResults({
+  foods,
+  specificFood,
+}: {
+  foods: FoodGeneral[];
+  specificFood: FoodDetailed | undefined;
+}) {
+  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleClick = (food_id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("food_id", food_id);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const [selectedFood, setSelectedFood] = useState(foods[0]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
     <div id="search-result" className="flex flex-col md:flex-row gap-2">
       {/* All results */}
       <ScrollArea className="w-full md:w-[50%] h-96 mb-3">
-        {mockFoods.map((food) => (
+        {foods.map((food) => (
           <Card
             key={food.food_id}
             className="mb-2 cursor-pointer hover:bg-muted p-3"
             onClick={() => {
+              handleClick(food.food_id);
               setSelectedFood(food);
               setIsPreviewOpen(true);
             }}
@@ -31,10 +52,7 @@ export default function SearchResults() {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                Per {food.serving_size}
-                {food.serving_unit} – {food.calories} kcal | Carbs:{" "}
-                {food.carbohydrate}g | Protein: {food.protein}g | Fat:{" "}
-                {food.fat}g
+                {food.food_description}
               </div>
             </CardContent>
           </Card>
@@ -42,20 +60,21 @@ export default function SearchResults() {
       </ScrollArea>
 
       {/** Selected food information: Side bar for medium screens and above */}
-      
+
       <div
         id="result-preview"
         className="hidden md:block md:w-[50%] h-96 p-1 bg-white overflow-hidden"
       >
-        <div className="h-full flex flex-col">
-            <FoodInfoCard food={selectedFood}/>
-        </div>
-       
+        {specificFood && (
+          <div className="h-full flex flex-col">
+            <FoodInfoCard food={specificFood} />
+          </div>
+        )}
       </div>
       {/** Selected food information: Popup for small screens */}
-      {isPreviewOpen && (
+      { isPreviewOpen && specificFood && (
         <PopupPreview
-          selectedFood={selectedFood}
+          selectedFood={specificFood}
           closePreview={() => setIsPreviewOpen(false)}
         />
       )}

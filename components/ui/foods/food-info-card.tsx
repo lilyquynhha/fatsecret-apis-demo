@@ -1,8 +1,8 @@
-import { Food } from "@/lib/data/types";
+import { FoodDetailed } from "@/lib/data/types";
 import { Separator } from "../separator";
 import { ScrollArea } from "../scroll-area";
 
-export default function FoodInfoCard({ food }: { food: Food }) {
+export default function FoodInfoCard({ food }: { food: FoodDetailed }) {
   return (
     <>
       {/* Header: Food name */}
@@ -26,24 +26,17 @@ export default function FoodInfoCard({ food }: { food: Food }) {
           <p>Carbohydrate: {food.carbohydrate} g</p>
           <p>Protein: {food.protein} g</p>
           <p>Fat: {food.fat} g</p>
-
-          {/* repeated content for testing */}
-          <p>
-            Serving size: {food.serving_size}
-            {food.serving_unit}
-          </p>
-          <p>Calories: {food.calories} kcal</p>
-          <p>Carbohydrate: {food.carbohydrate} g</p>
-          <p>Protein: {food.protein} g</p>
-          <p>Fat: {food.fat} g</p>
-          <p>
-            Serving size: {food.serving_size}
-            {food.serving_unit}
-          </p>
-          <p>Calories: {food.calories} kcal</p>
-          <p>Carbohydrate: {food.carbohydrate} g</p>
-          <p>Protein: {food.protein} g</p>
-          <p>Fat: {food.fat} g</p>
+          <p>Saturated Fat: {food.saturated_fat}</p>
+          <p>Polyunsaturated Fat: {food.polyunsaturated_fat}</p>
+          <p>Monounsaturated Fat: {food.monounsaturated_fat}</p>
+          <p>Cholesterol: {food.cholesterol}</p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          
         </div>
       </ScrollArea>
     </>
