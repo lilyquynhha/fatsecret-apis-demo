@@ -1,7 +1,6 @@
 import SearchResults from "@/components/ui/foods/search-results";
 import SearchBar from "@/components/ui/foods/search-bar";
-import { fatsecretFetchGeneral } from "@/lib/fatsecret";
-import { mapGeneralSearchToFoodModel } from "@/lib/utils";
+import { fetchGeneral, mapToFoodGeneral } from "@/lib/fatsecret";
 
 export default async function Page(props: {
   searchParams: Promise<{
@@ -9,31 +8,25 @@ export default async function Page(props: {
     food_id?: string;
   }>;
 }) {
-  const searchParams = await props.searchParams; // Get search params
-  const foodNameQuery = searchParams?.food_name; // Get food_name from search params
-  let fetchedFoodsData;
-  let mappedFoodsData; // All matched foods by name
-  let mappedFoodData; // Specific food by id
-  let isFoodsFound = false;
-  let isInput = false;
+  // Get food_name from search params
+  const searchParams = await props.searchParams;
+  const foodName = searchParams?.food_name;
 
-  // If food_name is empty (meaning the user hasn't entered any input)
-  if (!foodNameQuery) {
-    mappedFoodsData = undefined;
-    mappedFoodData = undefined;
+  let mappedFoods; // Store fetched & mapped foods
+  let isInput = false; // Control the display of SearchResults based on whether the user has entered a search input
+
+  // Check if the user has entered a search input
+  if (!foodName) {
+    mappedFoods = undefined;
   } else {
     isInput = true;
-    fetchedFoodsData = await fatsecretFetchGeneral(foodNameQuery); // Fetch all matched foods by name
+    let fetchedFoodsData = await fetchGeneral(foodName); // Fetch all matched foods by name
 
-    // If no food is found by name
-    if (fetchedFoodsData.foods.total_results == 0) {
-      mappedFoodsData = undefined;
-      mappedFoodData = undefined;
+    // Check is any food is found
+    if (fetchedFoodsData.foods.total_results > 0) {
+      mappedFoods = mapToFoodGeneral(fetchedFoodsData); // Map fetched foods to FoodGeneral model
     } else {
-      isFoodsFound = true;
-      mappedFoodsData = mapGeneralSearchToFoodModel(
-        fetchedFoodsData.foods.food,
-      ); // Map response to FoodGeneral data model
+      mappedFoods = undefined;
     }
   }
 
@@ -42,13 +35,11 @@ export default async function Page(props: {
       <div className="min-h-screen bg-gray-100">
         <div className="mx-auto w-full md:w-[80%] lg:w-[70%] py-6 px-6">
           <SearchBar />
-          {!isInput && "Enter a food name to show search results."}
 
-          {isInput && (
-            <SearchResults
-              foods={mappedFoodsData}
-              searchParams={searchParams}
-            />
+          {isInput ? (
+            <SearchResults foods={mappedFoods} />
+          ) : (
+            <p>Enter a food name to show search results.</p>
           )}
         </div>
       </div>

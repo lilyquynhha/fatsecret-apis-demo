@@ -1,25 +1,16 @@
 "use client";
 
-import {FoodGeneral } from "@/lib/data/types";
+import { FoodGeneral } from "@/lib/data/types";
 import { ScrollArea } from "../scroll-area";
 import { Card, CardContent } from "../card";
-import {
-  useSearchParams,
-  useRouter,
-  usePathname,
-} from "next/navigation";
 
-export default function FoodsList({ foods }: { foods: FoodGeneral[] }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const params = new URLSearchParams(searchParams.toString());
-  const pathname = usePathname();
-
-  const handleClick = (food_id: string) => {
-    params.set("food_id", food_id);
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
+export default function FoodsList({
+  foods,
+  onSelect,
+}: {
+  foods: FoodGeneral[];
+  onSelect: (foodId: string) => void;
+}) {
   return (
     <>
       <ScrollArea className="w-full md:w-[50%] h-96 mb-3">
@@ -28,7 +19,7 @@ export default function FoodsList({ foods }: { foods: FoodGeneral[] }) {
             key={food.food_id}
             className="mb-2 cursor-pointer hover:bg-muted p-3"
             onClick={() => {
-              handleClick(food.food_id);
+              onSelect(food.food_id);
             }}
           >
             <CardContent>

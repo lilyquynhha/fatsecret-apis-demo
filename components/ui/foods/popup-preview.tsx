@@ -22,9 +22,14 @@ export default function PopupPreview({
       {isPreviewOpen && specificFood && (
         <div className="md:hidden fixed inset-0 max-w-sm h-96 mx-auto my-auto">
           <div className="relative w-full h-full bg-background rounded-lg border-2 border-gray-300 border-solid flex flex-col">
-            <Button className="absolute top-2 right-2 z-10"
-            onClick={()=> {setIsPreviewOpen(!isPreviewOpen)}}
-            >X</Button>
+            <Button
+              className="absolute top-2 right-2 z-10"
+              onClick={() => {
+                setIsPreviewOpen(!isPreviewOpen);
+              }}
+            >
+              X
+            </Button>
 
             <FoodInfoCard food={specificFood} />
           </div>

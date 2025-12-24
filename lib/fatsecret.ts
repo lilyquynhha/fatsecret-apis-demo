@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { FoodDetailed } from "./data/types";
+import { FoodGeneral, FoodDetailed } from "./data/types";
+import { toNumber } from "./utils";
 
 const TOKEN_URL = "https://oauth.fatsecret.com/connect/token";
 const API_BASE = "https://platform.fatsecret.com/rest";
@@ -70,18 +70,11 @@ export async function fatsecretFetch(
   return res.json();
 }
 
-export interface FatsecretGeneralSearch {
-  food_id: string;
-  food_name: string;
-  food_description: string;
-  food_type: "Brand" | "Generic";
-  brand_name?: string;
-}
-
-export interface FatsecretGeneralSearchRes {
+// fatsecret's general search response data model
+export interface GeneralSearchRes {
   foods: {
     total_results: number;
-    food: FatsecretGeneralSearch[];
+    food: FoodGeneral[];
   };
 }
 
@@ -109,7 +102,12 @@ interface Serving {
   vitamin_d?: number;
 }
 
-export interface FatsecretDetailedSearchRes {
+// fatsecret's detailed search response data model
+export interface DetailedSearchRes {
+  error?: {
+    code: string;
+    message: string;
+  };
   food: {
     food_id: string;
     food_name: string;
@@ -122,20 +120,72 @@ export interface FatsecretDetailedSearchRes {
   };
 }
 
-export async function fatsecretFetchGeneral(food_name: string) {
+// Fetch all matched foods by name
+export async function fetchGeneral(food_name: string) {
   const data = await fatsecretFetch("/foods/search/v1", {
     search_expression: food_name,
     format: "json",
   });
 
-  return data as FatsecretGeneralSearchRes;
+  return data as GeneralSearchRes;
 }
 
-export async function fatsecretFetchDetailed(food_id: string) {
+// Fetch a specific food's details by food_id
+export async function fetchDetailed(food_id: string) {
   const data = await fatsecretFetch("/food/v5", {
     food_id: food_id,
     format: "json",
   });
 
-  return data as FatsecretDetailedSearchRes;
+  return data as DetailedSearchRes;
+}
+
+// Map a general search response to FoodGeneral model
+export function mapToFoodGeneral(res: GeneralSearchRes): FoodGeneral[] {
+  return res.foods.food.map((food) => ({
+    food_id: food.food_id,
+    food_name: food.food_name,
+    food_description: food.food_description,
+    food_type: food.food_type,
+    brand_name: food.brand_name,
+  }));
+}
+
+// Map a detailed search response to FoodDetailed model
+export function mapToFoodDetailed(res: DetailedSearchRes): FoodDetailed {
+  const servings = res.food.servings.serving;
+  const s = servings[0];
+
+  return {
+    food_id: res.food.food_id,
+    food_name: res.food.food_name,
+    food_description: res.food.food_description,
+    food_type: res.food.food_type,
+    brand_name: res.food.brand_name,
+    serving_unit: s.metric_serving_unit,
+    serving_size: toNumber(s.metric_serving_amount)!,
+    preferred_serving_size: toNumber(s.metric_serving_amount)!,
+
+    calories: toNumber(s.calories)!,
+    carbohydrate: toNumber(s.carbohydrate)!,
+    protein: toNumber(s.protein)!,
+    fat: toNumber(s.fat)!,
+
+    saturated_fat: toNumber(s.saturated_fat),
+    polyunsaturated_fat: toNumber(s.polyunsaturated_fat),
+    monounsaturated_fat: toNumber(s.monounsaturated_fat),
+    cholesterol: toNumber(s.cholesterol),
+    sodium: toNumber(s.sodium),
+    potassium: toNumber(s.potassium),
+    fiber: toNumber(s.fiber),
+    sugar: toNumber(s.sugar),
+
+    vitamin_a: toNumber(s.vitamin_a),
+    vitamin_c: toNumber(s.vitamin_c),
+    calcium: toNumber(s.calcium),
+    iron: toNumber(s.iron),
+    trans_fat: toNumber(s.trans_fat),
+    added_sugars: toNumber(s.added_sugars),
+    vitamin_d: toNumber(s.vitamin_d),
+  };
 }

@@ -1,28 +1,36 @@
-import { fatsecretFetchDetailed } from "@/lib/fatsecret";
-import { mapDetailedSearchToFoodModel } from "@/lib/utils";
+"use client";
+
 import NormalPreview from "./normal-preview";
 import PopupPreview from "./popup-preview";
+import { useEffect, useState } from "react";
 
-export default async function FoodPreview(props: {
-  searchParams?: {
-    food_id?: string;
-  };
-}) {
-  const searchParams = props.searchParams; // Get search params
-  const foodId = searchParams?.food_id; // Get food_id from search params
-//   console.log(searchParams);
+export default function FoodPreview({ foodId }: { foodId: string | null }) {
+  const [food, setFood] = useState(undefined);
+
+  // Fetch a specific food by food id
+  useEffect(() => {
+    if (!foodId) {
+      setFood(undefined);
+      return;
+    }
+
+    fetch(`/api/foods/search-by-id?food_id=${foodId}`)
+      .then((res) => res.json())
+      .then(setFood);
+  }, [foodId]);
+
   if (!foodId) {
-    return <div className="hidden md:block">Select a food to see details</div>;
+    return (
+      <div className="hidden md:block md:w-[50%] h-96 p-4 bg-white overflow-hidden">
+        Select a food to see details.
+      </div>
+    );
   }
-
-  // Fetch specific food by id
-  const fetchedFood = await fatsecretFetchDetailed(foodId);
-  const mappedFood = mapDetailedSearchToFoodModel(fetchedFood);
 
   return (
     <>
-      <NormalPreview specificFood={mappedFood} />
-      <PopupPreview specificFood={mappedFood} />
+      <NormalPreview specificFood={food} />
+      <PopupPreview specificFood={food} />
     </>
   );
 }
