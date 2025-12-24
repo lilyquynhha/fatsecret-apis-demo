@@ -3,19 +3,21 @@
 import { FoodGeneral } from "@/lib/data/types";
 import FoodsList from "./foods-list";
 import FoodPreview from "./food-preview";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function SearchResults({
   foods,
 }: {
   foods: FoodGeneral[] | undefined;
 }) {
+  const [currentFoods, setCurrentFoods] = useState(foods);
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
   // Reset selected food if it is a new food search
-  useEffect(() => {
+  if (foods != currentFoods) {
     setSelectedFoodId(null);
-  }, [foods]);
+    setCurrentFoods(foods);
+  }
 
   return (
     <>

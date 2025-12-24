@@ -9,11 +9,6 @@ export default function FoodPreview({ foodId }: { foodId: string | null }) {
 
   // Fetch a specific food by food id
   useEffect(() => {
-    if (!foodId) {
-      setFood(undefined);
-      return;
-    }
-
     fetch(`/api/foods/search-by-id?food_id=${foodId}`)
       .then((res) => res.json())
       .then(setFood);
