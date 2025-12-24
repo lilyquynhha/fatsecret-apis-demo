@@ -20,7 +20,7 @@ export default async function Page(props: {
     mappedFoods = undefined;
   } else {
     isInput = true;
-    let fetchedFoodsData = await fetchGeneral(foodName); // Fetch all matched foods by name
+    const fetchedFoodsData = await fetchGeneral(foodName); // Fetch all matched foods by name
 
     // Check is any food is found
     if (fetchedFoodsData.foods.total_results > 0) {
