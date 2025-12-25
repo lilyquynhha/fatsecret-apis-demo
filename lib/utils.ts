@@ -4,5 +4,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const toNumber = (v?: string | number) =>
-  v == null ? undefined : Number(v);
+export const toNumber = (value?: string | number) => {
+  if (!Number(value)) return null;
+  return Number(value);
+};

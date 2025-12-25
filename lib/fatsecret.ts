@@ -1,4 +1,4 @@
-import { FoodGeneral, FoodDetailed } from "./data/types";
+import { FoodGeneral, FoodDetailed, Serving } from "./data/types";
 import { toNumber } from "./utils";
 
 const TOKEN_URL = "https://oauth.fatsecret.com/connect/token";
@@ -78,9 +78,15 @@ export interface GeneralSearchRes {
   };
 }
 
-interface Serving {
-  metric_serving_unit: "g" | "ml";
+interface ServingRes {
+  serving_id: string;
+
+  metric_serving_unit: "ml" | "g" | "oz";
   metric_serving_amount: number;
+
+  measurement_description: string;
+  number_of_units: number;
+
   calories: number;
   carbohydrate: number;
   protein: number;
@@ -115,7 +121,7 @@ export interface DetailedSearchRes {
     food_type: "Brand" | "Generic";
     brand_name?: string;
     servings: {
-      serving: Serving[];
+      serving: ServingRes[];
     };
   };
 }
@@ -154,38 +160,61 @@ export function mapToFoodGeneral(res: GeneralSearchRes): FoodGeneral[] {
 // Map a detailed search response to FoodDetailed model
 export function mapToFoodDetailed(res: DetailedSearchRes): FoodDetailed {
   const servings = res.food.servings.serving;
-  const s = servings[0];
+
+  const mappedServings: Serving[] = servings.map((serving) => {
+    const convertedMetricServingAmount = toNumber(
+      serving.metric_serving_amount,
+    );
+    const convertedNonstandardServingAmount = toNumber(serving.number_of_units);
+    const convertedCalories = toNumber(serving.calories);
+    const convertedCarbohydrate = toNumber(serving.carbohydrate);
+    const convertedProtein = toNumber(serving.protein);
+    const convertedFat = toNumber(serving.fat);
+
+    return {
+      serving_id: serving.serving_id,
+
+      serving_unit: serving.metric_serving_unit,
+      serving_amount: convertedMetricServingAmount
+        ? convertedMetricServingAmount
+        : 0,
+
+      nonstandard_serving_unit: serving.measurement_description,
+      nonstandard_serving_amount: convertedNonstandardServingAmount
+        ? convertedNonstandardServingAmount
+        : 0,
+
+      calories: convertedCalories ? convertedCalories : 0,
+      carbohydrate: convertedCarbohydrate ? convertedCarbohydrate : 0,
+      protein: convertedProtein ? convertedProtein : 0,
+      fat: convertedFat ? convertedFat : 0,
+      saturated_fat: toNumber(serving.saturated_fat),
+      polyunsaturated_fat: toNumber(serving.polyunsaturated_fat),
+      monounsaturated_fat: toNumber(serving.monounsaturated_fat),
+      cholesterol: toNumber(serving.cholesterol),
+      sodium: toNumber(serving.sodium),
+      potassium: toNumber(serving.potassium),
+      fiber: toNumber(serving.fiber),
+      sugar: toNumber(serving.sugar),
+      vitamin_a: toNumber(serving.vitamin_a),
+      vitamin_c: toNumber(serving.vitamin_c),
+      calcium: toNumber(serving.calcium),
+      iron: toNumber(serving.iron),
+      trans_fat: toNumber(serving.trans_fat),
+      added_sugars: toNumber(serving.added_sugars),
+      vitamin_d: toNumber(serving.vitamin_d),
+    };
+  });
 
   return {
     food_id: res.food.food_id,
     food_name: res.food.food_name,
     food_description: res.food.food_description,
     food_type: res.food.food_type,
-    brand_name: res.food.brand_name,
-    serving_unit: s.metric_serving_unit,
-    serving_size: toNumber(s.metric_serving_amount)!,
-    preferred_serving_size: toNumber(s.metric_serving_amount)!,
+    brand_name: res.food.brand_name ? res.food.brand_name : null,
 
-    calories: toNumber(s.calories)!,
-    carbohydrate: toNumber(s.carbohydrate)!,
-    protein: toNumber(s.protein)!,
-    fat: toNumber(s.fat)!,
-
-    saturated_fat: toNumber(s.saturated_fat),
-    polyunsaturated_fat: toNumber(s.polyunsaturated_fat),
-    monounsaturated_fat: toNumber(s.monounsaturated_fat),
-    cholesterol: toNumber(s.cholesterol),
-    sodium: toNumber(s.sodium),
-    potassium: toNumber(s.potassium),
-    fiber: toNumber(s.fiber),
-    sugar: toNumber(s.sugar),
-
-    vitamin_a: toNumber(s.vitamin_a),
-    vitamin_c: toNumber(s.vitamin_c),
-    calcium: toNumber(s.calcium),
-    iron: toNumber(s.iron),
-    trans_fat: toNumber(s.trans_fat),
-    added_sugars: toNumber(s.added_sugars),
-    vitamin_d: toNumber(s.vitamin_d),
+    servings: {
+      serving: mappedServings,
+    },
   };
 }
