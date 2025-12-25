@@ -6,12 +6,13 @@ import FoodInfoCard from "./food-info-card";
 import { Button } from "../button";
 import { useState } from "react";
 export default function PopupPreview({
-  specificFood: specificFood,
+  specificFood,
 }: {
   specificFood: FoodDetailed | undefined;
 }) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(true);
   const [currentFood, setCurrentFood] = useState(specificFood);
+
   if (currentFood != specificFood) {
     setCurrentFood(specificFood);
     setIsPreviewOpen(true);
