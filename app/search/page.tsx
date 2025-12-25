@@ -6,11 +6,13 @@ export default async function Page(props: {
   searchParams: Promise<{
     food_name?: string;
     food_id?: string;
+    page?: number;
   }>;
 }) {
-  // Get food_name from search params
+  // Get food_name and page from search params
   const searchParams = await props.searchParams;
   const foodName = searchParams?.food_name;
+  const page = Number(searchParams?.page ?? 0);
 
   // Check if the user has entered a search input
   if (!foodName) {
@@ -19,8 +21,11 @@ export default async function Page(props: {
 
   return (
     <>
-      <Suspense key={foodName} fallback={<SearchResultsSkeleton />}>
-        <FetchSearchResults foodName={foodName} />
+      <Suspense
+        key={`${foodName}-${page}`}
+        fallback={<SearchResultsSkeleton />}
+      >
+        <FetchSearchResults foodName={foodName} page={page} />
       </Suspense>
     </>
   );

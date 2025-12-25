@@ -126,10 +126,14 @@ export interface DetailedSearchRes {
   };
 }
 
+export const MAX_RESULTS = 20;
+
 // Fetch all matched foods by name
-export async function fetchGeneral(food_name: string) {
+export async function fetchGeneral(food_name: string, page: number) {
   const data = await fatsecretFetch("/foods/search/v1", {
     search_expression: food_name,
+    page_number: page.toString(),
+    max_results: MAX_RESULTS.toString(),
     format: "json",
   });
 
@@ -140,6 +144,7 @@ export async function fetchGeneral(food_name: string) {
 export async function fetchDetailed(food_id: string) {
   const data = await fatsecretFetch("/food/v5", {
     food_id: food_id,
+    max_results: MAX_RESULTS.toString(),
     format: "json",
   });
 
