@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FatSecret API Demo
 
-## Getting Started
+## About the Project
 
-First, run the development server:
+This project is a **frontend-focused** demo that integrates the **FatSecret API** to search for foods and display detailed nutrition information.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Note: This is a **learning-focused personal project**, not intended for production use. The emphasis is on understanding architecture decisions, trade-offs, and real-world API constraints.
+
+Tech stack:
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- Shadcn/ui
+
+## Features
+
+- Search for foods using the FatSecret API
+- Fetch food details by ID
+- Display nutrition data in a structured UI
+- Client-side and server-side data fetching
+- Loading states and skeleton components
+- Basic error handling for API responses
+
+## Setup & Installation
+
+### Resigter for FatSecret API Access
+1. Resgiter for a Free Platform API account: https://platform.fatsecret.com/register
+2. Request a Client ID and Client Secret: https://platform.fatsecret.com/docs/guides/authentication/oauth2#request-id
+3. Ensure your development IP is whitelisted (required by fatsecret): https://platform.fatsecret.com/my-account/ip-restrictions
+
+### Environment Variables
+Create a `.env.local` file in the root of your project:
+```
+FATSECRET_CLIENT_ID=your_client_id
+FATSECRET_CLIENT_SECRET=your_client_secret
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Start the development server
+```
+pnpm install
+pnpm run dev
+```
+The app should now be running at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Learning Goals
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project focuses on the following learning outcomes:
 
-## Learn More
+- API Integration
 
-To learn more about Next.js, take a look at the following resources:
+    - Working with third-party APIs
+    - Understanding real-world API limitations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- OAuth 2.0
+    - Client credentials flow
+    - Token-based authentication
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Data Mapping
+    - Transforming API responses into frontend-friendly structures
+    - Handling inconsistent or nested API data
 
-## Deploy on Vercel
+- Error Handling
+    - Defensive programming against undefined or unexpected responses
+    - Graceful UI fallbacks
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- SSR vs Client Fetching
+    - Understanding when to fetch data on the server vs the client
+    - Managing loading states and hydration behavior in Next.js
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Constraints & Design Decisions
+Since FatSecret requires **IP address whitelisting**, this makes it incompatible with serverless platforms like Vercel for production use.
+
+Because of this limitation:
+- This project is intentionally not a full-stack deployed app
+- It focuses on **API usage and frontend data handling**
+- Authentication, database, and user-specific data are intentionally excluded
