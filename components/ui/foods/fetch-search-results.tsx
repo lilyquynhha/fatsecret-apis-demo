@@ -11,7 +11,6 @@ export default async function FetchSearchResults({
   let mappedFoods; // Store fetched & mapped foods
 
   const fetchedFoodsData = await fetchGeneral(foodName, page); // Fetch all matched foods by name
-  console.log("fatsecret response: ", fetchedFoodsData);
   const totalResults = fetchedFoodsData.foods.total_results;
 
   // Check is any food is found
